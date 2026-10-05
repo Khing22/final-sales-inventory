@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> — justin-stock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/products.css">
+</head>
+<body>
+  <div class="app">
+    <%- include("partials/sidebar") %>
+    <main class="main">
+      <%- include("partials/header") %>
+      <section class="content">
+<div class="page-heading">
+  <div>
+    <h1>Products</h1>
+    <p><%= isAdmin ? 'Manage your products, stock levels and suppliers.' : 'Browse the live product catalogue and stock levels for sales.' %></p>
+  </div>
+  <% if (isAdmin) { %>
+    <a class="btn-primary" href="#add">+ Add Product</a>
+  <% } %>
+</div>
+<section class="card">
+  <div class="filters large">
+    <input id="productSearchPage" type="search" placeholder="⌕  Search products...">
+    <% if (isAdmin) { %>
+      <select><option>All Categories</option><option>Electronics</option><option>Footwear</option><option>Bags</option></select>
+      <select><option>All Suppliers</option><option>Dell Supplies</option><option>Nike Ltd</option></select>
+    <% } %>
+  </div>
+  <div class="table-wrap">
+    <table id="productsPageTable">
+      <thead><tr><th>Product</th><th>Category</th><th>Supplier</th><th>Price</th><th>Stock</th><% if (isAdmin) { %><th>Actions</th><% } %></tr></thead>
+      <tbody>
+        <% products.forEach(p => { %>
+        <tr data-product-id="<%= p.id %>" data-product-name="<%= p.name %>" data-product-category="<%= p.category %>" data-product-supplier="<%= p.supplier %>" data-product-price="<%= p.price %>" data-product-stock="<%= p.stock %>"><td data-label="Product"><span class="table-product"><% if (p.image) { %><img class="mini-thumb product-image" src="<%= p.image %>" alt=""><% } else { %><span class="mini-thumb"><%= p.icon %></span><% } %><span><%= p.name %></span></span></td><td data-label="Category"><%= p.category %></td><td data-label="Supplier"><%= p.supplier %></td><td data-label="Price"><%= formatNaira(p.price) %></td><td data-label="Stock"><span class="stock-number <%= p.stock < 10 ? 'low' : '' %>"><%= p.stock %></span></td><% if (isAdmin) { %><td data-label="Actions" class="product-actions"><button class="action stock-add" type="button">Add Item</button><button class="action delete" type="button">Remove Item</button></td><% } %></tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<% if (isAdmin) { %>
+<section class="card form-card" id="add">
+  <h2>Add Product</h2>
+  <form method="post" action="/products/create" enctype="multipart/form-data" class="product-form" id="addProductForm">
+    <label for="product-name">Product name<input id="product-name" name="name" required></label>
+    <label for="product-category">Category<input id="product-category" name="category" required></label>
+    <label for="product-supplier">Supplier<input id="product-supplier" name="supplier" required></label>
+    <label for="product-price">Price<input id="product-price" name="price" type="number" min="0" required></label>
+    <label for="product-stock">Stock<input id="product-stock" name="stock" type="number" min="0" required></label>
+    <label for="product-image">Product image<input id="product-image" name="image" type="file" accept="image/*"></label>
+    <button class="btn-primary product-submit" type="submit">Save Product</button>
+  </form>
+</section>
+<%- include("partials/product-modal") %>
+<% } %>
+      </section>
+    </main>
+  </div>
+  <%- include("partials/footer") %>
+  <script>
+    const productSearchPage = document.getElementById('productSearchPage');
+    const productsPageTable = document.getElementById('productsPageTable');
+
+    if (productSearchPage && productsPageTable) {
+      productSearchPage.addEventListener('input', (event) => {
+        const term = event.target.value.toLowerCase();
+        productsPageTable.querySelectorAll('tbody tr').forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(term) ? '' : 'none';
+        });
+      });
+    }
+  </script>
+</body>
+</html>

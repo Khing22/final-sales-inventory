@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> — justin-stock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <%- include("partials/sidebar") %>
+    <main class="main">
+      <%- include("partials/header") %>
+      <section class="content">
+<div class="page-heading">
+  <div>
+    <h1>Transactions</h1>
+    <p>Review completed, pending and refunded transactions for your store.</p>
+  </div>
+  <a class="btn-primary" href="/orders/download" download>Download Transactions</a>
+</div>
+<section class="card">
+  <div class="filters large">
+    <input type="search" placeholder="⌕  Search transactions...">
+    <select>
+      <option>All Statuses</option>
+      <option>Completed</option>
+      <option>Pending</option>
+      <option>Refunded</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Transaction ID</th>
+          <th>Amount</th>
+          <th>Payment Method</th>
+          <th>Status</th>
+          <% if (isAdmin) { %><th>Staff</th><% } %>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Reference</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(o => { %>
+          <tr>
+            <td><strong><%= o.id %></strong></td>
+            <td><%= formatNaira(o.amount) %></td>
+            <td><%= o.paymentMethod %></td>
+            <td><span class="status <%= o.status.toLowerCase() %>"><%= o.status %></span></td>
+            <% if (isAdmin) { %><td><%= o.staffName %></td><% } %>
+            <td><%= o.date %></td>
+            <td><%= o.time || '—' %></td>
+            <td><%= o.reference %></td>
+            <td><a class="action edit" href="/orders/download">Download</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+      </section>
+    </main>
+  </div>
+  <%- include("partials/footer") %>
+</body>
+</html>
